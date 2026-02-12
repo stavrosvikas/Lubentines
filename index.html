@@ -428,6 +428,17 @@
 </head>
 <body>
 
+    <!-- Hidden font preloader: forces browser to download all fonts immediately -->
+    <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;visibility:hidden;pointer-events:none;">
+        <span style="font-family:'Roboto',sans-serif;font-weight:400;">Αα</span>
+        <span style="font-family:'Roboto',sans-serif;font-weight:500;">Αα</span>
+        <span style="font-family:'Roboto',sans-serif;font-weight:700;">Αα</span>
+        <span style="font-family:'Roboto',sans-serif;font-weight:800;">Αα</span>
+        <span style="font-family:'Comic Relief',cursive;font-weight:400;">Αα</span>
+        <span style="font-family:'Zen Antique Soft',serif;font-weight:400;">Αα</span>
+        <span style="font-family:'Dela Gothic One',sans-serif;font-weight:400;">Αα</span>
+    </div>
+
     <!-- Loading Screen -->
     <div class="loading-screen" id="loadingScreen">
         <img src="assets/logo02.png" alt="Loading..." class="loading-logo">
@@ -563,20 +574,11 @@
     window.onload = function () {
         isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
-        // #1 — Preload ALL fonts before app starts
-        var fontPromises = [
-            document.fonts.load('400 16px "Roboto"'),
-            document.fonts.load('500 16px "Roboto"'),
-            document.fonts.load('700 16px "Roboto"'),
-            document.fonts.load('800 16px "Roboto"'),
-            document.fonts.load('400 16px "Comic Relief"'),
-            document.fonts.load('400 16px "Zen Antique Soft"'),
-            document.fonts.load('400 16px "Dela Gothic One"')
-        ];
-
+        // Preload fonts: hidden DOM elements trigger download, fonts.ready waits for completion
+        var fontsReady = document.fonts.ready;
         var minWait = new Promise(function(resolve) { setTimeout(resolve, 2100); });
 
-        Promise.all([Promise.all(fontPromises), minWait]).then(function() {
+        Promise.all([fontsReady, minWait]).then(function() {
             // Fade out loading screen
             var ls = document.getElementById('loadingScreen');
             ls.classList.add('fade-out');
@@ -817,13 +819,16 @@
 
         var fontSize = 26;
         textObj.set('fontSize', fontSize);
+        textObj.initDimensions();
         canvas.renderAll();
         while (textObj.height > CANVAS_H - TEXT_PADDING * 4 && fontSize > 12) {
             fontSize--;
             textObj.set('fontSize', fontSize);
+            textObj.initDimensions();
             canvas.renderAll();
         }
         textObj.set({ top: CANVAS_H * 0.7, originY: 'center' });
+        textObj.setCoords();
         canvas.renderAll();
     }
 
@@ -844,11 +849,22 @@
         document.querySelectorAll('.font-btn').forEach(function(b) { b.classList.remove('selected'); });
         btn.classList.add('selected');
 
-        // #1 — Ensure font is loaded before applying to canvas
-        document.fonts.load('bold 26px "' + fontName + '"').then(function() {
+        // Apply font — fonts should already be loaded from preloader
+        var applyFont = function() {
             textObj.set('fontFamily', fontName);
+            // Force Fabric to re-measure with new font
+            textObj.initDimensions();
+            textObj.setCoords();
             updateText();
-        });
+        };
+
+        // Check if already available
+        if (document.fonts.check('bold 26px "' + fontName + '"')) {
+            applyFont();
+        } else {
+            // Fallback: wait for it
+            document.fonts.load('bold 26px "' + fontName + '"').then(applyFont);
+        }
     }
 
     function setTextColor(color, dot) {
@@ -951,21 +967,21 @@
        FINALIZE & EXPORT
     ═══════════════════════════════ */
     function finalize() {
-        // #1 — Add watermark centered, 20px from bottom
+        // Watermark — small, 8px from bottom
         fabric.Image.fromURL('assets/watermark.png', function(wm) {
             if (wm && wm.width) {
-                var wmScaleX = 124 / wm.width;
-                var wmScaleY = 52 / wm.height;
+                var wmW = 80;
+                var wmH = 34;
                 wm.set({
                     left: CANVAS_W / 2,
-                    top: CANVAS_H - 20 - 26,  // 20px from bottom edge, half of 52px height
+                    top: CANVAS_H - 8 - (wmH / 2),
                     originX: 'center',
                     originY: 'center',
-                    scaleX: wmScaleX,
-                    scaleY: wmScaleY,
+                    scaleX: wmW / wm.width,
+                    scaleY: wmH / wm.height,
                     selectable: false,
                     evented: false,
-                    opacity: 0.9
+                    opacity: 0.85
                 });
                 watermarkObj = wm;
                 canvas.add(watermarkObj);
