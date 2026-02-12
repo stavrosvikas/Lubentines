@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Lubentine's</title>
     <link rel="icon" type="image/png" href="assets/fav.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Comic+Relief&family=Dela+Gothic+One&family=Roboto:wght@400;500;700;800&family=Zen+Antique+Soft&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <style>
@@ -14,8 +16,6 @@
             --secondary: #ffb3c1;
             --dark: #590d22;
             --glass: rgba(255, 255, 255, 0.96);
-            --card-w: 400;
-            --card-h: 500;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -31,7 +31,6 @@
             padding-bottom: 40px;
         }
 
-        /* Floating hearts background */
         body::before {
             content: '';
             position: fixed;
@@ -47,15 +46,9 @@
         /* ─── Header ─── */
         .app-header {
             text-align: center;
-            padding: 30px 20px 10px;
+            padding: 20px 20px 6px;
             z-index: 5;
             position: relative;
-        }
-        .app-header h1 {
-            font-family: 'Roboto', sans-serif;
-            font-size: 2rem;
-            color: var(--dark);
-            text-shadow: 0 2px 10px rgba(255,77,109,0.2);
         }
         .app-header .logo {
             max-width: 260px;
@@ -74,39 +67,34 @@
             display: flex;
             gap: 8px;
             justify-content: center;
-            margin: 15px 0 5px;
+            margin: 10px 0 5px;
             z-index: 5;
             position: relative;
         }
         .step-dot {
-            width: 10px;
-            height: 10px;
+            width: 10px; height: 10px;
             border-radius: 50%;
             background: rgba(89,13,34,0.15);
             transition: all 0.4s ease;
         }
-        .step-dot.active {
-            background: var(--primary);
-            width: 28px;
-            border-radius: 5px;
-        }
-        .step-dot.done {
-            background: var(--dark);
-        }
+        .step-dot.active { background: var(--primary); width: 28px; border-radius: 5px; }
+        .step-dot.done { background: var(--dark); }
 
         /* ─── Preview Area ─── */
         .preview-area {
             display: none;
             justify-content: center;
-            padding: 15px 0;
+            padding: 10px 0;
             z-index: 10;
             position: relative;
             width: 100%;
         }
         .preview-area.visible { display: flex; }
 
+        .canvas-outer { position: relative; display: inline-block; }
+
         .canvas-wrapper {
-            box-shadow: 0 20px 60px rgba(89, 13, 34, 0.25), 0 0 0 1px rgba(255,255,255,0.3);
+            box-shadow: 0 20px 60px rgba(89,13,34,0.25), 0 0 0 1px rgba(255,255,255,0.3);
             border-radius: 18px;
             overflow: hidden;
             background: white;
@@ -114,29 +102,47 @@
             transition: transform 0.4s ease, margin 0.4s ease;
         }
 
+        /* ─── Delete button ─── */
+        .delete-btn-wrap {
+            display: none;
+            position: absolute;
+            top: 6px; right: 6px;
+            z-index: 50;
+        }
+        .delete-btn-wrap.visible { display: block; }
+        .delete-obj-btn {
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            background: rgba(200,20,50,0.85);
+            color: #fff;
+            font-size: 1.1rem; font-weight: bold;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            line-height: 1;
+        }
+        .delete-obj-btn:active { transform: scale(0.9); }
+
         /* ─── Controls Panel ─── */
         .main-app {
-            width: 92%;
-            max-width: 480px;
+            width: 92%; max-width: 480px;
             background: var(--glass);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-radius: 28px;
             padding: 24px;
             box-shadow: 0 10px 40px rgba(89,13,34,0.1), 0 0 0 1px rgba(255,255,255,0.6);
-            margin: 15px 0;
+            margin: 10px 0;
             z-index: 20;
             position: relative;
         }
 
-        .step-panel {
-            display: none;
-        }
+        .step-panel { display: none; }
         .step-panel.active {
             display: block;
-            animation: slideUp 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+            animation: slideUp 0.4s cubic-bezier(0.22,0.61,0.36,1);
         }
-
         @keyframes slideUp {
             from { transform: translateY(15px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
@@ -144,22 +150,20 @@
 
         .step-title {
             text-align: center;
-            font-size: 1.2rem;
-            font-weight: 800;
+            font-size: 1.15rem; font-weight: 800;
             color: var(--dark);
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         /* ─── Character Grid ─── */
         .char-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 8px;
         }
-
         .char-box {
             aspect-ratio: 1;
-            border-radius: 16px;
+            border-radius: 14px;
             background-size: cover;
             background-position: center;
             cursor: pointer;
@@ -177,75 +181,55 @@
 
         /* ─── Scroll Row ─── */
         .scroll-row {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding: 8px 2px;
+            display: flex; gap: 10px;
+            overflow-x: auto; padding: 8px 2px;
             scrollbar-width: none;
             -webkit-overflow-scrolling: touch;
         }
         .scroll-row::-webkit-scrollbar { display: none; }
 
         .section-label {
-            font-size: 0.8rem;
-            font-weight: 700;
+            font-size: 0.8rem; font-weight: 700;
             color: #a4133c;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin: 14px 0 6px;
+            margin: 12px 0 5px;
         }
 
-        /* ─── Option Items (bg/decor) ─── */
+        /* ─── BG Options ─── */
         .opt-item {
-            flex: 0 0 68px;
-            height: 68px;
+            flex: 0 0 68px; height: 68px;
             border-radius: 14px;
             border: 2.5px solid #f0f0f0;
             cursor: pointer;
             background-size: cover;
             background-position: center;
             transition: all 0.2s ease;
-            position: relative;
         }
-        .opt-item:hover {
-            border-color: var(--secondary);
-            transform: translateY(-2px);
-        }
-        .opt-item.selected {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(255,77,109,0.25);
-        }
+        .opt-item:hover { border-color: var(--secondary); transform: translateY(-2px); }
+        .opt-item.selected { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(255,77,109,0.25); }
 
+        /* ─── Decor Grid ─── */
         .opt-item-decor {
-            flex: 0 0 62px;
-            height: 62px;
-            border-radius: 14px;
-            border: 2.5px solid #f0f0f0;
+            border-radius: 10px;
+            border: 2px solid #f0f0f0;
             cursor: pointer;
-            background-size: 80%;
+            background-size: 65%;
             background-position: center;
             background-repeat: no-repeat;
             background-color: #fff;
             transition: all 0.2s ease;
         }
-        .opt-item-decor:hover {
-            border-color: var(--secondary);
-            transform: scale(1.05);
-        }
-
+        .opt-item-decor:hover { border-color: var(--secondary); transform: scale(1.05); }
         .decor-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            gap: 6px;
         }
         .decor-grid .opt-item-decor {
-            flex: none;
-            width: 100%;
-            height: 0;
-            padding-bottom: 65%;
+            width: 100%; height: 0;
+            padding-bottom: 55%;
             position: relative;
-            background-size: 60%;
-            border-radius: 10px;
         }
         .decor-grid .opt-item-decor::after {
             content: '';
@@ -256,36 +240,28 @@
         /* ─── Text Area ─── */
         .wish-textarea {
             width: 100%;
-            min-height: 80px;
-            max-height: 140px;
-            padding: 14px 16px;
-            border-radius: 16px;
+            min-height: 70px; max-height: 120px;
+            padding: 12px 14px;
+            border-radius: 14px;
             border: 2px solid #f5d0d6;
             font-family: 'Roboto', sans-serif;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--dark);
-            outline: none;
-            resize: none;
+            outline: none; resize: none;
             background: #fff;
             transition: border-color 0.2s;
         }
         .wish-textarea:focus { border-color: var(--primary); }
 
         /* ─── Font selector ─── */
-        .font-options {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
+        .font-options { display: flex; gap: 6px; margin-top: 10px; }
         .font-btn {
             flex: 1;
-            padding: 10px 8px;
-            border-radius: 12px;
+            padding: 9px 5px;
+            border-radius: 10px;
             border: 2px solid #f0f0f0;
-            background: #fff;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
+            background: #fff; cursor: pointer;
+            font-size: 0.8rem; font-weight: 600;
             color: var(--dark);
             transition: all 0.2s;
             text-align: center;
@@ -293,15 +269,10 @@
         .font-btn:hover { border-color: var(--secondary); }
         .font-btn.selected { border-color: var(--primary); background: #fff5f7; }
 
-        /* ─── Color picker row ─── */
-        .color-options {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
+        /* ─── Color picker ─── */
+        .color-options { display: flex; gap: 8px; margin-top: 10px; }
         .color-dot {
-            width: 36px;
-            height: 36px;
+            width: 34px; height: 34px;
             border-radius: 50%;
             border: 3px solid #f0f0f0;
             cursor: pointer;
@@ -312,41 +283,23 @@
 
         /* ─── Buttons ─── */
         .btn-next {
-            width: 100%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 16px;
-            font-weight: 800;
-            font-size: 1rem;
+            width: 100%; background: var(--primary); color: white;
+            border: none; padding: 15px; border-radius: 14px;
+            font-weight: 800; font-size: 0.95rem;
             font-family: 'Roboto', sans-serif;
-            margin-top: 16px;
-            cursor: pointer;
+            margin-top: 14px; cursor: pointer;
             transition: all 0.2s;
-            letter-spacing: 0.3px;
         }
-        .btn-next:hover { background: var(--primary-hover); transform: translateY(-1px); }
-        .btn-next:active { transform: translateY(0); }
-        .btn-next:disabled {
-            background: #ddd;
-            color: #aaa;
-            cursor: not-allowed;
-            transform: none;
-        }
+        .btn-next:hover { background: var(--primary-hover); }
+        .btn-next:disabled { background: #ddd; color: #aaa; cursor: not-allowed; }
 
         .btn-back {
-            width: 100%;
-            background: transparent;
-            color: #a4133c;
-            border: 2px solid #f5d0d6;
-            padding: 12px;
-            border-radius: 16px;
-            font-weight: 700;
-            font-size: 0.9rem;
+            width: 100%; background: transparent;
+            color: #a4133c; border: 2px solid #f5d0d6;
+            padding: 10px; border-radius: 14px;
+            font-weight: 700; font-size: 0.85rem;
             font-family: 'Roboto', sans-serif;
-            margin-top: 8px;
-            cursor: pointer;
+            margin-top: 8px; cursor: pointer;
             transition: all 0.2s;
         }
         .btn-back:hover { border-color: var(--primary); }
@@ -354,107 +307,141 @@
         .btn-finish {
             width: 100%;
             background: linear-gradient(135deg, #c9184a, #ff4d6d);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 16px;
-            font-weight: 800;
-            font-size: 1.05rem;
+            color: white; border: none;
+            padding: 15px; border-radius: 14px;
+            font-weight: 800; font-size: 1rem;
             font-family: 'Roboto', sans-serif;
-            margin-top: 16px;
-            cursor: pointer;
+            margin-top: 14px; cursor: pointer;
             transition: all 0.2s;
             box-shadow: 0 4px 15px rgba(201,24,74,0.3);
         }
-        .btn-finish:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,24,74,0.4); }
+        .btn-finish:hover { box-shadow: 0 6px 20px rgba(201,24,74,0.4); }
 
         /* ─── Final Actions ─── */
         #finalActions {
-            display: none;
-            gap: 18px;
+            display: none; gap: 18px;
             justify-content: center;
             margin-top: 20px;
-            z-index: 20;
-            position: relative;
+            z-index: 20; position: relative;
         }
-
         .action-btn {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            border: none;
+            width: 56px; height: 56px;
+            border-radius: 50%; border: none;
             background: white;
             box-shadow: 0 6px 20px rgba(89,13,34,0.12);
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             font-size: 1.4rem;
             transition: all 0.2s;
         }
-        .action-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(89,13,34,0.18); }
+        .action-btn:hover { transform: translateY(-3px); }
 
-        /* ─── Responsive ─── */
+        /* ─── Responsive — #4 bigger preview ─── */
         @media (max-width: 520px) {
             .canvas-wrapper {
-                transform: scale(0.82);
+                transform: scale(0.9);
                 transform-origin: top center;
-                margin-bottom: -36px;
+                margin-bottom: -20px;
             }
             .main-app { padding: 18px; }
             .app-header .logo { max-width: 200px; }
-            .step-title { font-size: 1.05rem; }
-            .decor-grid { gap: 6px; }
-            .decor-grid .opt-item-decor { padding-bottom: 55%; background-size: 55%; }
+            .app-header { padding: 15px 20px 4px; }
         }
 
-        @media (max-width: 400px) {
+        @media (max-width: 420px) {
             .canvas-wrapper {
-                transform: scale(0.72);
-                margin-bottom: -55px;
+                transform: scale(0.85);
+                margin-bottom: -30px;
             }
             .char-grid { gap: 6px; }
             .opt-item { flex: 0 0 56px; height: 56px; }
             .main-app { padding: 16px; border-radius: 22px; }
-            .btn-next, .btn-finish { padding: 14px; font-size: 0.95rem; }
-            .btn-back { padding: 10px; font-size: 0.85rem; }
-            .font-options { gap: 5px; }
-            .font-btn { padding: 8px 5px; font-size: 0.75rem; }
-            .decor-grid .opt-item-decor { padding-bottom: 50%; }
+            .btn-next, .btn-finish { padding: 13px; font-size: 0.9rem; }
+            .btn-back { padding: 9px; font-size: 0.8rem; }
+            .font-btn { padding: 7px 4px; font-size: 0.72rem; }
         }
 
-        @media (max-width: 340px) {
+        @media (max-width: 370px) {
             .canvas-wrapper {
-                transform: scale(0.62);
-                margin-bottom: -80px;
+                transform: scale(0.78);
+                margin-bottom: -44px;
             }
-            .app-header .logo { max-width: 160px; }
+            .app-header .logo { max-width: 170px; }
             .app-header p { font-size: 0.75rem; }
         }
 
-        /* Tall phones: give preview more room */
-        @media (max-height: 700px) and (max-width: 520px) {
+        @media (max-width: 320px) {
             .canvas-wrapper {
-                transform: scale(0.65);
-                transform-origin: top center;
-                margin-bottom: -70px;
+                transform: scale(0.68);
+                margin-bottom: -64px;
             }
-            .app-header { padding: 15px 20px 5px; }
         }
 
-        /* ─── Utility ─── */
+        /* ─── Loading Screen ─── */
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: linear-gradient(160deg, #ffccd5 0%, #ffb3c1 40%, #ff8fa3 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+        .loading-screen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .loading-logo {
+            width: 200px;
+            max-width: 60vw;
+            height: auto;
+        }
+        .loading-bar-track {
+            width: 200px;
+            max-width: 60vw;
+            height: 6px;
+            background: rgba(89,13,34,0.15);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 0;
+        }
+        .loading-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #c9184a, #ff4d6d);
+            border-radius: 3px;
+            animation: loadProgress 2s ease-out forwards;
+        }
+        @keyframes loadProgress {
+            0% { width: 0%; }
+            30% { width: 40%; }
+            60% { width: 70%; }
+            80% { width: 88%; }
+            100% { width: 100%; }
+        }
+
         .fade-in { animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <header class="app-header">
-        <img src="assets/logo.png" alt="Erotilo Maker" class="logo">
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <img src="assets/logo02.png" alt="Loading..." class="loading-logo">
+        <div class="loading-bar-track">
+            <div class="loading-bar-fill" id="loadingBar"></div>
+        </div>
+    </div>
+
+    <header class="app-header" id="appHeader" style="display:none;">
+        <img src="assets/logo.png" alt="Lubentine's" class="logo">
         <p>ΦΤΙΑΞΕ ΤΗ ΒΑΛΕΝΤΙΝΟΚΑΡΤΑ ΣΟΥ</p>
     </header>
 
-    <div class="step-indicator" id="stepIndicator">
+    <div class="step-indicator" id="stepIndicator" style="display:none;">
         <div class="step-dot active" data-step="1"></div>
         <div class="step-dot" data-step="2"></div>
         <div class="step-dot" data-step="3"></div>
@@ -462,21 +449,26 @@
     </div>
 
     <div class="preview-area" id="previewContainer">
-        <div class="canvas-wrapper" id="canvasWrapper">
-            <canvas id="cardCanvas" width="400" height="500"></canvas>
+        <div class="canvas-outer">
+            <div class="canvas-wrapper" id="canvasWrapper">
+                <canvas id="cardCanvas" width="400" height="500"></canvas>
+            </div>
+            <div class="delete-btn-wrap" id="deleteBtnWrap">
+                <button class="delete-obj-btn" onclick="deleteSelected()" title="Διαγραφή">✕</button>
+            </div>
         </div>
     </div>
 
-    <div class="main-app" id="controlsPanel">
+    <div class="main-app" id="controlsPanel" style="display:none;">
 
-        <!-- STEP 1: Character Selection -->
+        <!-- STEP 1 -->
         <div class="step-panel active" id="step1">
             <div class="step-title">Τι τύπος ερωτύλου είσαι;</div>
             <div class="char-grid" id="charGrid"></div>
             <button class="btn-next" id="toStep2" disabled onclick="goToStep(2)">ΣΥΝΕΧΕΙΑ</button>
         </div>
 
-        <!-- STEP 2: Background Selection -->
+        <!-- STEP 2 -->
         <div class="step-panel" id="step2">
             <div class="step-title">Διάλεξε σκηνικό</div>
             <div class="scroll-row" id="bgOptions"></div>
@@ -484,31 +476,31 @@
             <button class="btn-back" onclick="goToStep(1)">← ΠΙΣΩ</button>
         </div>
 
-        <!-- STEP 3: Wish Text -->
+        <!-- STEP 3 -->
         <div class="step-panel" id="step3">
             <div class="step-title">Τι θα του/της πεις;</div>
             <textarea class="wish-textarea" id="wishInput" oninput="updateText()" placeholder="Γράψε εδώ την ευχή σου..."></textarea>
             <div class="section-label">Γραμματοσειρά</div>
             <div class="font-options" id="fontOptions">
-                <button class="font-btn selected" style="font-family:'Roboto',sans-serif;font-weight:500" onclick="setFont('Roboto', this)">Roboto</button>
-                <button class="font-btn" style="font-family:'Comic Relief',cursive" onclick="setFont('Comic Relief', this)">Comic</button>
-                <button class="font-btn" style="font-family:'Zen Antique Soft',serif" onclick="setFont('Zen Antique Soft', this)">Zen</button>
-                <button class="font-btn" style="font-family:'Dela Gothic One',sans-serif" onclick="setFont('Dela Gothic One', this)">Gothic</button>
+                <button class="font-btn selected" style="font-family:'Roboto',sans-serif;font-weight:500" onclick="setFont('Roboto',this)">Roboto</button>
+                <button class="font-btn" style="font-family:'Comic Relief',cursive" onclick="setFont('Comic Relief',this)">Comic</button>
+                <button class="font-btn" style="font-family:'Zen Antique Soft',serif" onclick="setFont('Zen Antique Soft',this)">Zen</button>
+                <button class="font-btn" style="font-family:'Dela Gothic One',sans-serif" onclick="setFont('Dela Gothic One',this)">Gothic</button>
             </div>
             <div class="section-label">Χρώμα κειμένου</div>
             <div class="color-options" id="textColorOptions">
-                <div class="color-dot selected" style="background:#fff" onclick="setTextColor('#ffffff', this)"></div>
-                <div class="color-dot" style="background:#000" onclick="setTextColor('#000000', this)"></div>
-                <div class="color-dot" style="background:#ff4d6d" onclick="setTextColor('#ff4d6d', this)"></div>
+                <div class="color-dot selected" style="background:#fff" onclick="setTextColor('#ffffff',this)"></div>
+                <div class="color-dot" style="background:#000" onclick="setTextColor('#000000',this)"></div>
+                <div class="color-dot" style="background:#ff4d6d" onclick="setTextColor('#ff4d6d',this)"></div>
             </div>
             <button class="btn-next" onclick="goToStep(4)">ΔΙΑΚΟΣΜΗΣΗ</button>
             <button class="btn-back" onclick="goToStep(2)">← ΠΙΣΩ</button>
-            <div style="text-align:center; margin-top:10px;">
-                <a href="#" onclick="resetTextPosition(); return false;" style="font-size:0.78rem; color:#a4133c; text-decoration:underline; opacity:0.7;">Επαναφορά θέσης κειμένου</a>
+            <div style="text-align:center;margin-top:8px;">
+                <a href="#" onclick="resetTextPosition();return false;" style="font-size:0.75rem;color:#a4133c;text-decoration:underline;opacity:0.7;">Επαναφορά θέσης κειμένου</a>
             </div>
         </div>
 
-        <!-- STEP 4: Decorations -->
+        <!-- STEP 4 -->
         <div class="step-panel" id="step4">
             <div class="step-title">Βάλε το κάτι παραπάνω</div>
             <div class="decor-grid" id="decorOptions"></div>
@@ -525,21 +517,24 @@
 
 <script>
     /* ═══════════════════════════════
-       DATA
+       DATA — 12 characters (#2)
     ═══════════════════════════════ */
-    const characters = [
-        { id: 'bezos',        img: 'bezos.png',        wish: 'Τον Μπέζο για σένα.',                                                       bg: 'bezos_bg.png' },
-        { id: 'nikolouli',    img: 'nikolouli.png',    wish: 'Διπλά φιλάκια.',                                                             bg: 'nikolouli_bg.png' },
-        { id: 'gio_kay',      img: 'gio_kay.png',      wish: "Don't do dis, do me.",                                                       bg: 'gio_kay_bg.png' },
-        { id: 'vromopappous', img: 'vromopappous.png',  wish: 'Χρόνια πολλά βρωμόπαππου.',                                                  bg: 'vromopappous_bg.png' },
-        { id: 'ligdas',       img: 'ligdas.png',       wish: 'Θέλω να σε ξεδιπλώσω αναλόγως και τοιουτοτρόπως.',                            bg: 'ligdas_bg.png' },
-        { id: 'katakouzinos', img: 'katakouzinos.png', wish: 'Αυτό δεν είναι το όργανό μου, αυτό το χρησιμοποιώ ως προφυλακτικό.',          bg: 'katakouzinos_bg.png' },
-        { id: 'bad_bunny',    img: 'bad_bunny.png',    wish: 'Θέλω να γίνεις η κακιά κουνέλα μου.',                                        bg: 'bad_bunny_bg.png' },
-        { id: 'bartzokas',    img: 'bartzokas.png',    wish: 'Ακούς \u0336β\u0336γαζέλα;',                                                  bg: 'bartzokas_bg.png' },
-        { id: 'karamitrou',   img: 'karamitrou.png',   wish: 'Θέλω να γίνω μέλισσα στο μελίσσι σου.',                                      bg: 'karamitrou_bg.png' }
+    var characters = [
+        { id: 'bezos',        img: 'bezos.png',        wish: 'Τον Μπέζο για σένα.',                                                              bg: 'bezos_bg.png' },
+        { id: 'nikolouli',    img: 'nikolouli.png',    wish: 'Διπλά φιλάκια.',                                                                    bg: 'nikolouli_bg.png' },
+        { id: 'gio_kay',      img: 'gio_kay.png',      wish: "Don\u2019t do dis, do me.",                                                         bg: 'gio_kay_bg.png' },
+        { id: 'vromopappous', img: 'vromopappous.png',  wish: 'Χρόνια πολλά βρωμόπαππου.',                                                         bg: 'vromopappous_bg.png' },
+        { id: 'ligdas',       img: 'ligdas.png',       wish: 'Θέλω να σε ξεδιπλώσω αναλόγως και τοιουτοτρόπως.',                                   bg: 'ligdas_bg.png' },
+        { id: 'katakouzinos', img: 'katakouzinos.png', wish: 'Αυτό δεν είναι το όργανό μου, αυτό το χρησιμοποιώ ως προφυλακτικό.',                 bg: 'katakouzinos_bg.png' },
+        { id: 'bad_bunny',    img: 'bad_bunny.png',    wish: 'Θέλω να γίνεις η κακιά κουνέλα μου.',                                               bg: 'bad_bunny_bg.png' },
+        { id: 'bartzokas',    img: 'bartzokas.png',    wish: 'Ακούς \u0336\u03B2\u0336γαζέλα;',                                                    bg: 'bartzokas_bg.png' },
+        { id: 'karamitrou',   img: 'karamitrou.png',   wish: 'Θέλω να γίνω μέλισσα στο μελίσσι σου.',                                             bg: 'karamitrou_bg.png' },
+        { id: 'koutsoumpas',  img: 'koutsoumpas.png',  wish: 'ΑΛΛΑ ΑΥΤΗ ΕΙΣΑΙ (ΓΙΑ ΜΕΝΑ)',                                                       bg: 'koutsoumpas_bg.png' },
+        { id: 'zwi',          img: 'zwi.png',          wish: 'ΘΕΛΩ ΝΑ ΜΕ ΕΞΕΤΑΣΕΙΣ ΣΤΗΝ ΕΠΙΤΡΟΠΗ ΣΟΥ',                                           bg: 'zwi_bg.png' },
+        { id: 'akylas',       img: 'akylas.png',       wish: 'ΦΕΡΤΟ\nΤΟ ΤΗΛΕΦΩΝΟ ΣΟΥ',                                                           bg: 'akylas_bg.png' }
     ];
 
-    const solidBGs = [
+    var solidBGs = [
         { t: 'col', v: 'rgb(0, 0, 0)' },
         { t: 'col', v: 'rgb(225, 118, 132)' },
         { t: 'col', v: 'rgb(225, 47, 129)' },
@@ -549,84 +544,177 @@
     /* ═══════════════════════════════
        STATE
     ═══════════════════════════════ */
-    let canvas;
-    let textObj = null;
-    let charImgObj = null;
-    let selectedChar = null;
-    let currentStep = 1;
+    var canvas;
+    var textObj = null;
+    var charImgObj = null;
+    var watermarkObj = null;
+    var selectedChar = null;
+    var currentStep = 1;
+    var isMobile = false;
 
-    const CANVAS_W = 400;
-    const CANVAS_H = 500;
-    const TEXT_PADDING = 20;
-    const MAX_TEXT_WIDTH = CANVAS_W - TEXT_PADDING * 2;
+    var CANVAS_W = 400;
+    var CANVAS_H = 500;
+    var TEXT_PADDING = 20;
+    var MAX_TEXT_WIDTH = CANVAS_W - TEXT_PADDING * 2;
 
     /* ═══════════════════════════════
        INIT
     ═══════════════════════════════ */
     window.onload = function () {
+        isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+        // #1 — Preload ALL fonts before app starts
+        var fontPromises = [
+            document.fonts.load('400 16px "Roboto"'),
+            document.fonts.load('500 16px "Roboto"'),
+            document.fonts.load('700 16px "Roboto"'),
+            document.fonts.load('800 16px "Roboto"'),
+            document.fonts.load('400 16px "Comic Relief"'),
+            document.fonts.load('400 16px "Zen Antique Soft"'),
+            document.fonts.load('400 16px "Dela Gothic One"')
+        ];
+
+        var minWait = new Promise(function(resolve) { setTimeout(resolve, 2100); });
+
+        Promise.all([Promise.all(fontPromises), minWait]).then(function() {
+            // Fade out loading screen
+            var ls = document.getElementById('loadingScreen');
+            ls.classList.add('fade-out');
+            setTimeout(function() {
+                ls.style.display = 'none';
+                // Show app
+                document.getElementById('appHeader').style.display = '';
+                document.getElementById('stepIndicator').style.display = 'flex';
+                document.getElementById('controlsPanel').style.display = '';
+            }, 500);
+        });
+
+        // Init canvas immediately (in background)
         canvas = new fabric.Canvas('cardCanvas', {
             selection: false,
             allowTouchScrolling: true,
             stopContextMenu: true
         });
 
+        if (isMobile) {
+            fabric.Object.prototype.set({
+                cornerSize: 26,
+                touchCornerSize: 44,
+                cornerColor: 'rgba(255,77,109,0.9)',
+                cornerStrokeColor: '#fff',
+                cornerStyle: 'circle',
+                transparentCorners: false,
+                borderColor: 'rgba(255,77,109,0.6)',
+                borderScaleFactor: 2.5,
+                padding: 10
+            });
+        } else {
+            fabric.Object.prototype.set({
+                cornerSize: 12,
+                cornerColor: 'rgba(255,77,109,0.8)',
+                cornerStrokeColor: '#fff',
+                transparentCorners: false,
+                borderColor: 'rgba(255,77,109,0.6)',
+                padding: 5
+            });
+        }
+
+        fabric.Object.prototype.setControlsVisibility({
+            mtr: true,
+            ml: false, mr: false, mt: false, mb: false
+        });
+
         initStep1();
         initDecorations();
 
-        // Constrain objects to canvas on every interaction
-        canvas.on('object:moving', constrainToCanvas);
-        canvas.on('object:scaling', constrainToCanvas);
-        canvas.on('object:modified', constrainToCanvas);
-        canvas.on('object:rotating', constrainToCanvas);
+        canvas.on('object:moving', constrainHalf);
+        canvas.on('object:scaling', constrainHalf);
+        canvas.on('object:modified', constrainHalf);
+        canvas.on('object:rotating', constrainHalf);
+        canvas.on('object:modified', function() { bringTextToFront(); });
 
-        // Touch: prevent page scroll when interacting with canvas
-        var canvasEl = document.getElementById('cardCanvas');
-        canvasEl.addEventListener('touchstart', function(e) {
-            if (canvas.findTarget(e)) {
-                e.preventDefault();
-            }
-        }, { passive: false });
+        canvas.on('selection:created', onSelectionChange);
+        canvas.on('selection:updated', onSelectionChange);
+        canvas.on('selection:cleared', function() {
+            document.getElementById('deleteBtnWrap').classList.remove('visible');
+        });
+
+        var upperEl = document.querySelector('.upper-canvas');
+        if (!upperEl) upperEl = document.querySelector('#cardCanvas');
+        ['touchstart', 'touchmove'].forEach(function(evt) {
+            upperEl.addEventListener(evt, function(e) {
+                if (canvas.findTarget(e)) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        });
     };
 
-    function constrainToCanvas(e) {
+    /* ═══════════════════════════════
+       #7 — DELETE BUTTON LOGIC
+    ═══════════════════════════════ */
+    function onSelectionChange(e) {
+        var obj = e.selected ? e.selected[0] : canvas.getActiveObject();
+        // Show delete only for stickers (not text, charImg, watermark)
+        if (obj && obj !== textObj && obj !== charImgObj && obj !== watermarkObj) {
+            document.getElementById('deleteBtnWrap').classList.add('visible');
+        } else {
+            document.getElementById('deleteBtnWrap').classList.remove('visible');
+        }
+    }
+
+    function deleteSelected() {
+        var obj = canvas.getActiveObject();
+        if (obj && obj !== textObj && obj !== charImgObj && obj !== watermarkObj) {
+            canvas.remove(obj);
+            canvas.discardActiveObject();
+            canvas.renderAll();
+        }
+        document.getElementById('deleteBtnWrap').classList.remove('visible');
+    }
+
+    /* ═══════════════════════════════
+       #5 — CONSTRAIN: ALLOW HALF OVERFLOW
+    ═══════════════════════════════ */
+    function constrainHalf(e) {
         var obj = e.target;
         if (!obj) return;
         obj.setCoords();
         var bound = obj.getBoundingRect(true);
+        var halfW = bound.width / 2;
+        var halfH = bound.height / 2;
         var cw = canvas.getWidth();
         var ch = canvas.getHeight();
 
-        // Fully keep object inside canvas
-        if (bound.left < 0) obj.left -= bound.left;
-        if (bound.top < 0) obj.top -= bound.top;
-        if (bound.left + bound.width > cw) obj.left -= (bound.left + bound.width - cw);
-        if (bound.top + bound.height > ch) obj.top -= (bound.top + bound.height - ch);
-
-        // Prevent scaling beyond canvas
-        obj.setCoords();
-        bound = obj.getBoundingRect(true);
-        if (bound.width > cw || bound.height > ch) {
-            var maxScale = Math.min(cw / (obj.width + obj.padding * 2), ch / (obj.height + obj.padding * 2));
-            obj.scaleX = Math.min(obj.scaleX, maxScale);
-            obj.scaleY = Math.min(obj.scaleY, maxScale);
-        }
+        // At least half the object must stay inside
+        if (bound.left + halfW < 0) obj.left -= (bound.left + halfW);
+        if (bound.top + halfH < 0) obj.top -= (bound.top + halfH);
+        if (bound.left + halfW > cw) obj.left -= (bound.left + halfW - cw);
+        if (bound.top + halfH > ch) obj.top -= (bound.top + halfH - ch);
 
         obj.setCoords();
+    }
+
+    /* ═══════════════════════════════
+       #6 — TEXT ALWAYS ON TOP
+    ═══════════════════════════════ */
+    function bringTextToFront() {
+        if (textObj) canvas.bringToFront(textObj);
     }
 
     /* ═══════════════════════════════
        STEP 1: CHARACTER SELECT
     ═══════════════════════════════ */
     function initStep1() {
-        const grid = document.getElementById('charGrid');
-        characters.forEach(char => {
-            const div = document.createElement('div');
+        var grid = document.getElementById('charGrid');
+        characters.forEach(function(char) {
+            var div = document.createElement('div');
             div.className = 'char-box';
-            div.style.backgroundImage = `url('assets/${char.img}')`;
+            div.style.backgroundImage = "url('assets/" + char.img + "')";
             div.setAttribute('data-id', char.id);
-            div.onclick = () => {
+            div.onclick = function() {
                 selectedChar = char;
-                document.querySelectorAll('.char-box').forEach(b => b.classList.remove('selected'));
+                document.querySelectorAll('.char-box').forEach(function(b) { b.classList.remove('selected'); });
                 div.classList.add('selected');
                 document.getElementById('toStep2').disabled = false;
             };
@@ -638,29 +726,21 @@
        STEP 2: BACKGROUND SELECT
     ═══════════════════════════════ */
     function initStep2BGs() {
-        const container = document.getElementById('bgOptions');
+        var container = document.getElementById('bgOptions');
         container.innerHTML = '';
+        var bgs = [{ t: 'img', v: 'assets/' + selectedChar.bg }].concat(solidBGs);
 
-        const bgs = [
-            { t: 'img', v: `assets/${selectedChar.bg}` },
-            ...solidBGs
-        ];
-
-        bgs.forEach((bg, i) => {
-            const div = document.createElement('div');
+        bgs.forEach(function(bg, i) {
+            var div = document.createElement('div');
             div.className = 'opt-item';
             if (bg.t === 'col') {
                 div.style.backgroundColor = bg.v;
             } else {
-                div.style.backgroundImage = `url('${bg.v}')`;
+                div.style.backgroundImage = "url('" + bg.v + "')";
             }
-            // Auto-select first (custom bg)
-            if (i === 0) {
-                div.classList.add('selected');
-                applyBG(bg);
-            }
-            div.onclick = () => {
-                container.querySelectorAll('.opt-item').forEach(el => el.classList.remove('selected'));
+            if (i === 0) { div.classList.add('selected'); applyBG(bg); }
+            div.onclick = function() {
+                container.querySelectorAll('.opt-item').forEach(function(el) { el.classList.remove('selected'); });
                 div.classList.add('selected');
                 applyBG(bg);
             };
@@ -673,33 +753,22 @@
             canvas.setBackgroundImage(null, canvas.renderAll.bind(canvas));
             canvas.setBackgroundColor(bg.v, canvas.renderAll.bind(canvas));
         } else {
-            fabric.Image.fromURL(bg.v, (img) => {
+            fabric.Image.fromURL(bg.v, function(img) {
                 if (!img) return;
-                img.set({
-                    scaleX: CANVAS_W / img.width,
-                    scaleY: CANVAS_H / img.height
-                });
+                img.set({ scaleX: CANVAS_W / img.width, scaleY: CANVAS_H / img.height });
                 canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
             }, { crossOrigin: 'anonymous' });
         }
     }
 
     /* ═══════════════════════════════
-       STEP 3: TEXT
+       SETUP: Character Image + Text
     ═══════════════════════════════ */
     function setupText() {
-        // Remove previous character image
-        if (charImgObj) {
-            canvas.remove(charImgObj);
-            charImgObj = null;
-        }
-        // Remove previous text
-        if (textObj) {
-            canvas.remove(textObj);
-            textObj = null;
-        }
+        if (charImgObj) { canvas.remove(charImgObj); charImgObj = null; }
+        if (textObj) { canvas.remove(textObj); textObj = null; }
 
-        // Add character image to canvas
+        // Character image
         fabric.Image.fromURL('assets/' + selectedChar.img, function(img) {
             if (!img || !img.width) return;
             var scale = Math.min(140 / img.width, 140 / img.height);
@@ -709,19 +778,15 @@
                 originX: 'center',
                 originY: 'center',
                 scaleX: scale,
-                scaleY: scale,
-                cornerColor: 'rgba(255,77,109,0.8)',
-                cornerStrokeColor: '#fff',
-                cornerSize: 10,
-                transparentCorners: false,
-                borderColor: 'rgba(255,77,109,0.6)'
+                scaleY: scale
             });
             charImgObj = img;
             canvas.add(charImgObj);
+            bringTextToFront();
             canvas.renderAll();
         }, { crossOrigin: 'anonymous' });
 
-        // Create text (hidden at step 2, shown at step 3)
+        // Text — hidden at step 2
         textObj = new fabric.Textbox(selectedChar.wish, {
             left: CANVAS_W / 2,
             top: CANVAS_H * 0.7,
@@ -735,33 +800,22 @@
             width: MAX_TEXT_WIDTH,
             splitByGrapheme: false,
             editable: false,
-            lockScalingX: false,
-            lockScalingY: false,
-            cornerColor: 'rgba(255,77,109,0.8)',
-            cornerStrokeColor: '#fff',
-            cornerSize: 10,
-            transparentCorners: false,
-            borderColor: 'rgba(255,77,109,0.6)',
-            padding: 5,
-            shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.4)', blur: 6, offsetX: 1, offsetY: 2 }),
             opacity: 0,
             selectable: false,
-            evented: false
+            evented: false,
+            shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.4)', blur: 6, offsetX: 1, offsetY: 2 })
         });
         canvas.add(textObj);
-
-        // Set wish input
         document.getElementById('wishInput').value = selectedChar.wish;
         canvas.renderAll();
     }
 
     function updateText() {
         if (!textObj) return;
-        const val = document.getElementById('wishInput').value;
+        var val = document.getElementById('wishInput').value;
         textObj.set('text', val);
 
-        // Auto-shrink font size if text overflows card height
-        let fontSize = 26;
+        var fontSize = 26;
         textObj.set('fontSize', fontSize);
         canvas.renderAll();
         while (textObj.height > CANVAS_H - TEXT_PADDING * 4 && fontSize > 12) {
@@ -769,74 +823,57 @@
             textObj.set('fontSize', fontSize);
             canvas.renderAll();
         }
-
-        // Re-center vertically
         textObj.set({ top: CANVAS_H * 0.7, originY: 'center' });
-        constrainTextToCanvas();
         canvas.renderAll();
-    }
-
-    function constrainTextToCanvas() {
-        if (!textObj) return;
-        const bound = textObj.getBoundingRect();
-        if (bound.left < TEXT_PADDING) textObj.left += TEXT_PADDING - bound.left;
-        if (bound.top < TEXT_PADDING) textObj.top += TEXT_PADDING - bound.top;
-        if (bound.left + bound.width > CANVAS_W - TEXT_PADDING)
-            textObj.left -= (bound.left + bound.width) - (CANVAS_W - TEXT_PADDING);
-        if (bound.top + bound.height > CANVAS_H - TEXT_PADDING)
-            textObj.top -= (bound.top + bound.height) - (CANVAS_H - TEXT_PADDING);
-    }
-
-    function setFont(fontName, btn) {
-        if (!textObj) return;
-        textObj.set('fontFamily', fontName);
-        canvas.renderAll();
-        document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        // Re-check text fits
-        updateText();
-    }
-
-    function setTextColor(color, dot) {
-        if (!textObj) return;
-        textObj.set('fill', color);
-        // Adjust shadow for light colors
-        if (color === '#ffffff') {
-            textObj.set('shadow', new fabric.Shadow({ color: 'rgba(0,0,0,0.5)', blur: 6, offsetX: 1, offsetY: 2 }));
-        } else {
-            textObj.set('shadow', new fabric.Shadow({ color: 'rgba(0,0,0,0.3)', blur: 4, offsetX: 1, offsetY: 1 }));
-        }
-        canvas.renderAll();
-        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
-        dot.classList.add('selected');
     }
 
     function resetTextPosition() {
         if (!textObj) return;
         textObj.set({
-            left: CANVAS_W / 2,
-            top: CANVAS_H * 0.7,
-            originX: 'center',
-            originY: 'center',
-            scaleX: 1,
-            scaleY: 1,
-            angle: 0
+            left: CANVAS_W / 2, top: CANVAS_H * 0.7,
+            originX: 'center', originY: 'center',
+            scaleX: 1, scaleY: 1, angle: 0
         });
         textObj.setCoords();
         canvas.setActiveObject(textObj);
         canvas.renderAll();
     }
 
+    function setFont(fontName, btn) {
+        if (!textObj) return;
+        document.querySelectorAll('.font-btn').forEach(function(b) { b.classList.remove('selected'); });
+        btn.classList.add('selected');
+
+        // #1 — Ensure font is loaded before applying to canvas
+        document.fonts.load('bold 26px "' + fontName + '"').then(function() {
+            textObj.set('fontFamily', fontName);
+            updateText();
+        });
+    }
+
+    function setTextColor(color, dot) {
+        if (!textObj) return;
+        textObj.set('fill', color);
+        if (color === '#ffffff') {
+            textObj.set('shadow', new fabric.Shadow({ color: 'rgba(0,0,0,0.5)', blur: 6, offsetX: 1, offsetY: 2 }));
+        } else {
+            textObj.set('shadow', new fabric.Shadow({ color: 'rgba(0,0,0,0.3)', blur: 4, offsetX: 1, offsetY: 1 }));
+        }
+        canvas.renderAll();
+        document.querySelectorAll('.color-dot').forEach(function(d) { d.classList.remove('selected'); });
+        dot.classList.add('selected');
+    }
+
     /* ═══════════════════════════════
        STEP 4: DECORATIONS
     ═══════════════════════════════ */
     function initDecorations() {
-        const container = document.getElementById('decorOptions');
+        var container = document.getElementById('decorOptions');
         container.innerHTML = '';
-        for (let i = 1; i <= 9; i++) {
-            const num = String(i).padStart(2, '0');
-            const src = 'assets/d' + num + '.png';
-            const div = document.createElement('div');
+        for (var i = 1; i <= 9; i++) {
+            var num = String(i).padStart(2, '0');
+            var src = 'assets/d' + num + '.png';
+            var div = document.createElement('div');
             div.className = 'opt-item-decor';
             div.style.backgroundImage = "url('" + src + "')";
             div.addEventListener('click', (function(imgSrc) {
@@ -850,14 +887,10 @@
                             originX: 'center',
                             originY: 'center',
                             scaleX: scale,
-                            scaleY: scale,
-                            cornerColor: 'rgba(255,77,109,0.8)',
-                            cornerStrokeColor: '#fff',
-                            cornerSize: 10,
-                            transparentCorners: false,
-                            borderColor: 'rgba(255,77,109,0.6)'
+                            scaleY: scale
                         });
                         canvas.add(sticker);
+                        bringTextToFront(); // #6
                         canvas.setActiveObject(sticker);
                         canvas.renderAll();
                     }, { crossOrigin: 'anonymous' });
@@ -871,50 +904,43 @@
        NAVIGATION
     ═══════════════════════════════ */
     function goToStep(n) {
-        // Hide all panels
-        document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.step-panel').forEach(function(p) { p.classList.remove('active'); });
         document.getElementById('step' + n).classList.add('active');
-
         currentStep = n;
         updateStepIndicator(n);
+        document.getElementById('deleteBtnWrap').classList.remove('visible');
 
-        // Step-specific logic
         if (n === 1) {
             document.getElementById('previewContainer').classList.remove('visible');
         }
-
         if (n === 2) {
             document.getElementById('previewContainer').classList.add('visible');
             initStep2BGs();
             setupText();
-            // Text completely hidden and non-interactive at step 2
             canvas.discardActiveObject();
             canvas.renderAll();
         }
-
         if (n === 3) {
             document.getElementById('previewContainer').classList.add('visible');
             if (textObj) {
                 textObj.set({ opacity: 1, selectable: true, evented: true });
+                bringTextToFront();
                 canvas.setActiveObject(textObj);
             }
             canvas.renderAll();
         }
-
         if (n === 4) {
             document.getElementById('previewContainer').classList.add('visible');
-            // Deselect text, allow stickers
+            if (textObj) bringTextToFront();
             canvas.discardActiveObject();
             canvas.renderAll();
         }
-
-        // Scroll to top smoothly
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function updateStepIndicator(active) {
-        document.querySelectorAll('.step-dot').forEach((dot, i) => {
-            const step = i + 1;
+        document.querySelectorAll('.step-dot').forEach(function(dot, i) {
+            var step = i + 1;
             dot.classList.remove('active', 'done');
             if (step === active) dot.classList.add('active');
             else if (step < active) dot.classList.add('done');
@@ -925,28 +951,51 @@
        FINALIZE & EXPORT
     ═══════════════════════════════ */
     function finalize() {
-        // Lock all objects
-        canvas.forEachObject(obj => {
+        // #1 — Add watermark centered, 20px from bottom
+        fabric.Image.fromURL('assets/watermark.png', function(wm) {
+            if (wm && wm.width) {
+                var wmScaleX = 124 / wm.width;
+                var wmScaleY = 52 / wm.height;
+                wm.set({
+                    left: CANVAS_W / 2,
+                    top: CANVAS_H - 20 - 26,  // 20px from bottom edge, half of 52px height
+                    originX: 'center',
+                    originY: 'center',
+                    scaleX: wmScaleX,
+                    scaleY: wmScaleY,
+                    selectable: false,
+                    evented: false,
+                    opacity: 0.9
+                });
+                watermarkObj = wm;
+                canvas.add(watermarkObj);
+                canvas.bringToFront(watermarkObj);
+            }
+            lockAndFinish();
+        }, { crossOrigin: 'anonymous' });
+    }
+
+    function lockAndFinish() {
+        canvas.forEachObject(function(obj) {
             obj.selectable = false;
             obj.evented = false;
         });
         canvas.discardActiveObject().renderAll();
 
-        // UI switch
         document.getElementById('controlsPanel').style.display = 'none';
         document.getElementById('stepIndicator').style.display = 'none';
+        document.getElementById('deleteBtnWrap').classList.remove('visible');
         document.getElementById('finalActions').style.display = 'flex';
 
-        // Scale canvas wrapper to full size
-        const wrapper = document.getElementById('canvasWrapper');
+        var wrapper = document.getElementById('canvasWrapper');
         wrapper.style.transform = 'none';
         wrapper.style.margin = '10px 0';
     }
 
     function downloadCard() {
-        const dataURL = canvas.toDataURL({ format: 'png', quality: 1, multiplier: 2 });
-        const link = document.createElement('a');
-        link.download = 'erotilo-card.png';
+        var dataURL = canvas.toDataURL({ format: 'png', quality: 1, multiplier: 2 });
+        var link = document.createElement('a');
+        link.download = 'lubentines-card.png';
         link.href = dataURL;
         document.body.appendChild(link);
         link.click();
@@ -955,25 +1004,24 @@
 
     async function shareCard() {
         try {
-            const dataURL = canvas.toDataURL({ format: 'png', quality: 1, multiplier: 2 });
-            const res = await fetch(dataURL);
-            const blob = await res.blob();
-            const file = new File([blob], 'erotilo-card.png', { type: 'image/png' });
+            var dataURL = canvas.toDataURL({ format: 'png', quality: 1, multiplier: 2 });
+            var res = await fetch(dataURL);
+            var blob = await res.blob();
+            var file = new File([blob], 'lubentines-card.png', { type: 'image/png' });
 
             if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                 await navigator.share({
                     files: [file],
-                    title: 'Erotilo Card 💌',
+                    title: "Lubentine's Card \uD83D\uDC8C",
                     text: 'Δες τι σου ετοίμασα!'
                 });
             } else {
-                // Fallback: copy image to clipboard
                 try {
                     await navigator.clipboard.write([
                         new ClipboardItem({ 'image/png': blob })
                     ]);
                     alert('Η εικόνα αντιγράφηκε στο clipboard!');
-                } catch {
+                } catch(ex) {
                     alert('Χρησιμοποίησε τη Λήψη για να κατεβάσεις την κάρτα.');
                 }
             }
